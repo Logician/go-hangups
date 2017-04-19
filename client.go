@@ -2,10 +2,12 @@ package hangups
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
-	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -289,31 +291,7 @@ func (c *Client) SearchEntities(query string, maxCount uint64) (*hangouts.Search
 }
 
 // Send a chat message to a conversation.
-func (c *Client) SendChatMessage(conversationId, message string) (*hangouts.SendChatMessageResponse, error) {
-	// for now treat message as one segment
-	// TODO split it on TEXT, LINE_BREAK and LINK
-	segmentType := hangouts.SegmentType_SEGMENT_TYPE_TEXT
-
-	linkData := &hangouts.LinkData{}
-	// check if it is a link
-	_, err := url.Parse(message)
-	if err == nil {
-		segmentType = hangouts.SegmentType_SEGMENT_TYPE_LINK
-		linkData.LinkTarget = &message
-	}
-
-	messageContent := &hangouts.MessageContent{
-		Segment: []*hangouts.Segment{
-			&hangouts.Segment{
-				Type:       &segmentType,
-				Text:       &message,
-				Formatting: &hangouts.Formatting{},
-				LinkData:   linkData,
-			},
-		},
-		Attachment: nil,
-	}
-
+func (c *Client) SendChatMessage(conversationId string, messageContent *hangouts.MessageContent, photoID string) (*hangouts.SendChatMessageResponse, error) {
 	request := &hangouts.SendChatMessageRequest{
 		RequestHeader:      c.NewRequestHeaders(),
 		EventRequestHeader: c.NewEventRequestHeaders(conversationId, false),
@@ -321,12 +299,72 @@ func (c *Client) SendChatMessage(conversationId, message string) (*hangouts.Send
 		//Annotation: [],
 		//ExistingMedia: &hangouts.ExistingMedia{Photo: &hangouts.Photo{}}, //picassa photos
 	}
+
+	if photoID != "" {
+		request.ExistingMedia = &hangouts.ExistingMedia{Photo: &hangouts.Photo{PhotoId: &photoID}}
+	}
+
 	response := &hangouts.SendChatMessageResponse{}
-	err = c.ProtobufApiRequest("conversations/sendchatmessage", request, response)
+	err := c.ProtobufApiRequest("conversations/sendchatmessage", request, response)
 	if err != nil {
 		return nil, err
 	}
 	return response, nil
+}
+
+func (c *Client) UploadImage(fileName string, imageData []byte) (string, error) {
+
+	payload := []byte("{" +
+		"\"protocolVersion\": \"0.8\"," +
+		"\"createSessionRequest\": {" +
+		"\"fields\": [{" +
+		"\"external\": {" +
+		"\"name\": \"file\"," +
+		"\"filename\": \"" + fileName + "\"," +
+		"\"put\": {}," +
+		"\"size\": " + strconv.Itoa(len(imageData)) +
+		"}" +
+		"}]" +
+		"}" +
+		"}")
+
+	res1, err := ApiRequest("https://docs.google.com/upload/photos/resumable", "application/x-www-form-urlencoded;charset=UTF-8", "json", c.Session.Cookies, c.Session.Sapisid, map[string]string{}, payload)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	log.Println(string(payload), "\n", string(res1))
+
+	res1Map := make(map[string]interface{})
+	err = json.Unmarshal(res1, &res1Map)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	uploadUrl := res1Map["sessionStatus"].(map[string]interface{})["externalFieldTransfers"].([]interface{})[0].(map[string]interface{})["putInfo"].(map[string]interface{})["url"].(string)
+	log.Println(uploadUrl)
+
+	res2, err := ApiRequest2(uploadUrl, "application/octet-stream", c.Session.Cookies, c.Session.Sapisid, map[string]string{}, imageData)
+	if err != nil {
+		log.Println("ApiRequest2", err)
+		return "", err
+	}
+
+	log.Println("res2=", string(res2))
+
+	res2Map := make(map[string]interface{})
+	err = json.Unmarshal(res2, &res2Map)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	photoId := res2Map["sessionStatus"].(map[string]interface{})["additionalInfo"].(map[string]interface{})["uploader_service.GoogleRupioAdditionalInfo"].(map[string]interface{})["completionInfo"].(map[string]interface{})["customerSpecificInfo"].(map[string]interface{})["photoid"].(string)
+	log.Println(photoId)
+
+	return photoId, nil
 }
 
 // Send an invitation to a non-contact.

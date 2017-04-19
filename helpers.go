@@ -56,3 +56,31 @@ func ApiRequest(endpointUrl, contentType, responseType, cookies, sapisid string,
 
 	return bodyBytes, nil
 }
+
+func ApiRequest2(endpointUrl, contentType, cookies, sapisid string, headers map[string]string, payload []byte) ([]byte, error) {
+	authHeaders := GetAuthHeaders(sapisid)
+	for headerKey, headerVal := range authHeaders {
+		headers[headerKey] = headerVal
+	}
+	headers["cookie"] = cookies
+	headers["content-type"] = contentType
+	// This header is required for Protocol Buffer responses, which causes
+	// them to be base64 encoded:
+	headers["X-Goog-Encode-Response-If-Executable"] = "base64"
+
+	req, err := http.NewRequest("post", endpointUrl, bytes.NewBuffer(payload))
+	for headerKey, headerVal := range headers {
+		req.Header.Set(headerKey, headerVal)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+	return bodyBytes, nil
+}

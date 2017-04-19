@@ -146,12 +146,10 @@ It has these top-level messages:
 package hangouts
 
 import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = fmt.Errorf
 var _ = math.Inf
 
 // Describes which Hangouts client is active.
@@ -4384,103 +4382,28 @@ type StateUpdate struct {
 	StateUpdateHeader *StateUpdateHeader `protobuf:"bytes,1,opt,name=state_update_header" json:"state_update_header,omitempty"`
 	// If set, includes conversation attributes that have been updated by the
 	// notification.
-	Conversation *Conversation `protobuf:"bytes,13,opt,name=conversation" json:"conversation,omitempty"`
-	// Types that are valid to be assigned to StateUpdate:
-	//	*StateUpdate_ConversationNotification
-	//	*StateUpdate_EventNotification
-	//	*StateUpdate_FocusNotification
-	//	*StateUpdate_TypingNotification
-	//	*StateUpdate_NotificationLevelNotification
-	//	*StateUpdate_ReplyToInviteNotification
-	//	*StateUpdate_WatermarkNotification
-	//	*StateUpdate_ViewModification
-	//	*StateUpdate_EasterEggNotification
-	//	*StateUpdate_SelfPresenceNotification
-	//	*StateUpdate_DeleteNotification
-	//	*StateUpdate_PresenceNotification
-	//	*StateUpdate_BlockNotification
-	//	*StateUpdate_NotificationSettingNotification
-	//	*StateUpdate_RichPresenceEnabledStateNotification
-	StateUpdate      isStateUpdate_StateUpdate `protobuf_oneof:"state_update"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Conversation                         *Conversation                                 `protobuf:"bytes,13,opt,name=conversation" json:"conversation,omitempty"`
+	ConversationNotification             *ConversationNotification                     `protobuf:"bytes,2,opt,name=conversation_notification" json:"conversation_notification,omitempty"`
+	EventNotification                    *EventNotification                            `protobuf:"bytes,3,opt,name=event_notification" json:"event_notification,omitempty"`
+	FocusNotification                    *SetFocusNotification                         `protobuf:"bytes,4,opt,name=focus_notification" json:"focus_notification,omitempty"`
+	TypingNotification                   *SetTypingNotification                        `protobuf:"bytes,5,opt,name=typing_notification" json:"typing_notification,omitempty"`
+	NotificationLevelNotification        *SetConversationNotificationLevelNotification `protobuf:"bytes,6,opt,name=notification_level_notification" json:"notification_level_notification,omitempty"`
+	ReplyToInviteNotification            *ReplyToInviteNotification                    `protobuf:"bytes,7,opt,name=reply_to_invite_notification" json:"reply_to_invite_notification,omitempty"`
+	WatermarkNotification                *WatermarkNotification                        `protobuf:"bytes,8,opt,name=watermark_notification" json:"watermark_notification,omitempty"`
+	ViewModification                     *ConversationViewModification                 `protobuf:"bytes,11,opt,name=view_modification" json:"view_modification,omitempty"`
+	EasterEggNotification                *EasterEggNotification                        `protobuf:"bytes,12,opt,name=easter_egg_notification" json:"easter_egg_notification,omitempty"`
+	SelfPresenceNotification             *SelfPresenceNotification                     `protobuf:"bytes,14,opt,name=self_presence_notification" json:"self_presence_notification,omitempty"`
+	DeleteNotification                   *DeleteActionNotification                     `protobuf:"bytes,15,opt,name=delete_notification" json:"delete_notification,omitempty"`
+	PresenceNotification                 *PresenceNotification                         `protobuf:"bytes,16,opt,name=presence_notification" json:"presence_notification,omitempty"`
+	BlockNotification                    *BlockNotification                            `protobuf:"bytes,17,opt,name=block_notification" json:"block_notification,omitempty"`
+	NotificationSettingNotification      *SetNotificationSettingNotification           `protobuf:"bytes,19,opt,name=notification_setting_notification" json:"notification_setting_notification,omitempty"`
+	RichPresenceEnabledStateNotification *RichPresenceEnabledStateNotification         `protobuf:"bytes,20,opt,name=rich_presence_enabled_state_notification" json:"rich_presence_enabled_state_notification,omitempty"`
+	XXX_unrecognized                     []byte                                        `json:"-"`
 }
 
 func (m *StateUpdate) Reset()         { *m = StateUpdate{} }
 func (m *StateUpdate) String() string { return proto.CompactTextString(m) }
 func (*StateUpdate) ProtoMessage()    {}
-
-type isStateUpdate_StateUpdate interface {
-	isStateUpdate_StateUpdate()
-}
-
-type StateUpdate_ConversationNotification struct {
-	ConversationNotification *ConversationNotification `protobuf:"bytes,2,opt,name=conversation_notification,oneof"`
-}
-type StateUpdate_EventNotification struct {
-	EventNotification *EventNotification `protobuf:"bytes,3,opt,name=event_notification,oneof"`
-}
-type StateUpdate_FocusNotification struct {
-	FocusNotification *SetFocusNotification `protobuf:"bytes,4,opt,name=focus_notification,oneof"`
-}
-type StateUpdate_TypingNotification struct {
-	TypingNotification *SetTypingNotification `protobuf:"bytes,5,opt,name=typing_notification,oneof"`
-}
-type StateUpdate_NotificationLevelNotification struct {
-	NotificationLevelNotification *SetConversationNotificationLevelNotification `protobuf:"bytes,6,opt,name=notification_level_notification,oneof"`
-}
-type StateUpdate_ReplyToInviteNotification struct {
-	ReplyToInviteNotification *ReplyToInviteNotification `protobuf:"bytes,7,opt,name=reply_to_invite_notification,oneof"`
-}
-type StateUpdate_WatermarkNotification struct {
-	WatermarkNotification *WatermarkNotification `protobuf:"bytes,8,opt,name=watermark_notification,oneof"`
-}
-type StateUpdate_ViewModification struct {
-	ViewModification *ConversationViewModification `protobuf:"bytes,11,opt,name=view_modification,oneof"`
-}
-type StateUpdate_EasterEggNotification struct {
-	EasterEggNotification *EasterEggNotification `protobuf:"bytes,12,opt,name=easter_egg_notification,oneof"`
-}
-type StateUpdate_SelfPresenceNotification struct {
-	SelfPresenceNotification *SelfPresenceNotification `protobuf:"bytes,14,opt,name=self_presence_notification,oneof"`
-}
-type StateUpdate_DeleteNotification struct {
-	DeleteNotification *DeleteActionNotification `protobuf:"bytes,15,opt,name=delete_notification,oneof"`
-}
-type StateUpdate_PresenceNotification struct {
-	PresenceNotification *PresenceNotification `protobuf:"bytes,16,opt,name=presence_notification,oneof"`
-}
-type StateUpdate_BlockNotification struct {
-	BlockNotification *BlockNotification `protobuf:"bytes,17,opt,name=block_notification,oneof"`
-}
-type StateUpdate_NotificationSettingNotification struct {
-	NotificationSettingNotification *SetNotificationSettingNotification `protobuf:"bytes,19,opt,name=notification_setting_notification,oneof"`
-}
-type StateUpdate_RichPresenceEnabledStateNotification struct {
-	RichPresenceEnabledStateNotification *RichPresenceEnabledStateNotification `protobuf:"bytes,20,opt,name=rich_presence_enabled_state_notification,oneof"`
-}
-
-func (*StateUpdate_ConversationNotification) isStateUpdate_StateUpdate()             {}
-func (*StateUpdate_EventNotification) isStateUpdate_StateUpdate()                    {}
-func (*StateUpdate_FocusNotification) isStateUpdate_StateUpdate()                    {}
-func (*StateUpdate_TypingNotification) isStateUpdate_StateUpdate()                   {}
-func (*StateUpdate_NotificationLevelNotification) isStateUpdate_StateUpdate()        {}
-func (*StateUpdate_ReplyToInviteNotification) isStateUpdate_StateUpdate()            {}
-func (*StateUpdate_WatermarkNotification) isStateUpdate_StateUpdate()                {}
-func (*StateUpdate_ViewModification) isStateUpdate_StateUpdate()                     {}
-func (*StateUpdate_EasterEggNotification) isStateUpdate_StateUpdate()                {}
-func (*StateUpdate_SelfPresenceNotification) isStateUpdate_StateUpdate()             {}
-func (*StateUpdate_DeleteNotification) isStateUpdate_StateUpdate()                   {}
-func (*StateUpdate_PresenceNotification) isStateUpdate_StateUpdate()                 {}
-func (*StateUpdate_BlockNotification) isStateUpdate_StateUpdate()                    {}
-func (*StateUpdate_NotificationSettingNotification) isStateUpdate_StateUpdate()      {}
-func (*StateUpdate_RichPresenceEnabledStateNotification) isStateUpdate_StateUpdate() {}
-
-func (m *StateUpdate) GetStateUpdate() isStateUpdate_StateUpdate {
-	if m != nil {
-		return m.StateUpdate
-	}
-	return nil
-}
 
 func (m *StateUpdate) GetStateUpdateHeader() *StateUpdateHeader {
 	if m != nil {
@@ -4497,343 +4420,108 @@ func (m *StateUpdate) GetConversation() *Conversation {
 }
 
 func (m *StateUpdate) GetConversationNotification() *ConversationNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_ConversationNotification); ok {
-		return x.ConversationNotification
+	if m != nil {
+		return m.ConversationNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetEventNotification() *EventNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_EventNotification); ok {
-		return x.EventNotification
+	if m != nil {
+		return m.EventNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetFocusNotification() *SetFocusNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_FocusNotification); ok {
-		return x.FocusNotification
+	if m != nil {
+		return m.FocusNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetTypingNotification() *SetTypingNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_TypingNotification); ok {
-		return x.TypingNotification
+	if m != nil {
+		return m.TypingNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetNotificationLevelNotification() *SetConversationNotificationLevelNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_NotificationLevelNotification); ok {
-		return x.NotificationLevelNotification
+	if m != nil {
+		return m.NotificationLevelNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetReplyToInviteNotification() *ReplyToInviteNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_ReplyToInviteNotification); ok {
-		return x.ReplyToInviteNotification
+	if m != nil {
+		return m.ReplyToInviteNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetWatermarkNotification() *WatermarkNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_WatermarkNotification); ok {
-		return x.WatermarkNotification
+	if m != nil {
+		return m.WatermarkNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetViewModification() *ConversationViewModification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_ViewModification); ok {
-		return x.ViewModification
+	if m != nil {
+		return m.ViewModification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetEasterEggNotification() *EasterEggNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_EasterEggNotification); ok {
-		return x.EasterEggNotification
+	if m != nil {
+		return m.EasterEggNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetSelfPresenceNotification() *SelfPresenceNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_SelfPresenceNotification); ok {
-		return x.SelfPresenceNotification
+	if m != nil {
+		return m.SelfPresenceNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetDeleteNotification() *DeleteActionNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_DeleteNotification); ok {
-		return x.DeleteNotification
+	if m != nil {
+		return m.DeleteNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetPresenceNotification() *PresenceNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_PresenceNotification); ok {
-		return x.PresenceNotification
+	if m != nil {
+		return m.PresenceNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetBlockNotification() *BlockNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_BlockNotification); ok {
-		return x.BlockNotification
+	if m != nil {
+		return m.BlockNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetNotificationSettingNotification() *SetNotificationSettingNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_NotificationSettingNotification); ok {
-		return x.NotificationSettingNotification
+	if m != nil {
+		return m.NotificationSettingNotification
 	}
 	return nil
 }
 
 func (m *StateUpdate) GetRichPresenceEnabledStateNotification() *RichPresenceEnabledStateNotification {
-	if x, ok := m.GetStateUpdate().(*StateUpdate_RichPresenceEnabledStateNotification); ok {
-		return x.RichPresenceEnabledStateNotification
+	if m != nil {
+		return m.RichPresenceEnabledStateNotification
 	}
 	return nil
-}
-
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*StateUpdate) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _StateUpdate_OneofMarshaler, _StateUpdate_OneofUnmarshaler, []interface{}{
-		(*StateUpdate_ConversationNotification)(nil),
-		(*StateUpdate_EventNotification)(nil),
-		(*StateUpdate_FocusNotification)(nil),
-		(*StateUpdate_TypingNotification)(nil),
-		(*StateUpdate_NotificationLevelNotification)(nil),
-		(*StateUpdate_ReplyToInviteNotification)(nil),
-		(*StateUpdate_WatermarkNotification)(nil),
-		(*StateUpdate_ViewModification)(nil),
-		(*StateUpdate_EasterEggNotification)(nil),
-		(*StateUpdate_SelfPresenceNotification)(nil),
-		(*StateUpdate_DeleteNotification)(nil),
-		(*StateUpdate_PresenceNotification)(nil),
-		(*StateUpdate_BlockNotification)(nil),
-		(*StateUpdate_NotificationSettingNotification)(nil),
-		(*StateUpdate_RichPresenceEnabledStateNotification)(nil),
-	}
-}
-
-func _StateUpdate_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*StateUpdate)
-	// state_update
-	switch x := m.StateUpdate.(type) {
-	case *StateUpdate_ConversationNotification:
-		b.EncodeVarint(2<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ConversationNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_EventNotification:
-		b.EncodeVarint(3<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.EventNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_FocusNotification:
-		b.EncodeVarint(4<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.FocusNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_TypingNotification:
-		b.EncodeVarint(5<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.TypingNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_NotificationLevelNotification:
-		b.EncodeVarint(6<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.NotificationLevelNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_ReplyToInviteNotification:
-		b.EncodeVarint(7<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ReplyToInviteNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_WatermarkNotification:
-		b.EncodeVarint(8<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.WatermarkNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_ViewModification:
-		b.EncodeVarint(11<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ViewModification); err != nil {
-			return err
-		}
-	case *StateUpdate_EasterEggNotification:
-		b.EncodeVarint(12<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.EasterEggNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_SelfPresenceNotification:
-		b.EncodeVarint(14<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SelfPresenceNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_DeleteNotification:
-		b.EncodeVarint(15<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.DeleteNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_PresenceNotification:
-		b.EncodeVarint(16<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.PresenceNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_BlockNotification:
-		b.EncodeVarint(17<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BlockNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_NotificationSettingNotification:
-		b.EncodeVarint(19<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.NotificationSettingNotification); err != nil {
-			return err
-		}
-	case *StateUpdate_RichPresenceEnabledStateNotification:
-		b.EncodeVarint(20<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.RichPresenceEnabledStateNotification); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("StateUpdate.StateUpdate has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _StateUpdate_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*StateUpdate)
-	switch tag {
-	case 2: // state_update.conversation_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ConversationNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_ConversationNotification{msg}
-		return true, err
-	case 3: // state_update.event_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(EventNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_EventNotification{msg}
-		return true, err
-	case 4: // state_update.focus_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SetFocusNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_FocusNotification{msg}
-		return true, err
-	case 5: // state_update.typing_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SetTypingNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_TypingNotification{msg}
-		return true, err
-	case 6: // state_update.notification_level_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SetConversationNotificationLevelNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_NotificationLevelNotification{msg}
-		return true, err
-	case 7: // state_update.reply_to_invite_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ReplyToInviteNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_ReplyToInviteNotification{msg}
-		return true, err
-	case 8: // state_update.watermark_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(WatermarkNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_WatermarkNotification{msg}
-		return true, err
-	case 11: // state_update.view_modification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ConversationViewModification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_ViewModification{msg}
-		return true, err
-	case 12: // state_update.easter_egg_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(EasterEggNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_EasterEggNotification{msg}
-		return true, err
-	case 14: // state_update.self_presence_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SelfPresenceNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_SelfPresenceNotification{msg}
-		return true, err
-	case 15: // state_update.delete_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(DeleteActionNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_DeleteNotification{msg}
-		return true, err
-	case 16: // state_update.presence_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(PresenceNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_PresenceNotification{msg}
-		return true, err
-	case 17: // state_update.block_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BlockNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_BlockNotification{msg}
-		return true, err
-	case 19: // state_update.notification_setting_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SetNotificationSettingNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_NotificationSettingNotification{msg}
-		return true, err
-	case 20: // state_update.rich_presence_enabled_state_notification
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(RichPresenceEnabledStateNotification)
-		err := b.DecodeMessage(msg)
-		m.StateUpdate = &StateUpdate_RichPresenceEnabledStateNotification{msg}
-		return true, err
-	default:
-		return false, nil
-	}
 }
 
 // Header for StateUpdate messages.
