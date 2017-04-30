@@ -3,7 +3,6 @@ package hangups
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -14,6 +13,7 @@ import (
 )
 
 type Session struct {
+	GetAuthToken func(string) string
 	RefreshToken string
 	Cookies      string
 	Sapisid      string
@@ -21,14 +21,17 @@ type Session struct {
 
 func (s *Session) Init() error {
 	oauthConf := &oauth2.Config{
-		ClientID:     "936475272427.apps.googleusercontent.com",              //iOS id
-		ClientSecret: "KWsJlkaMn1jGLxQpWxMnOox-",                             //iOS secret
-		Scopes:       []string{"https://www.google.com/accounts/OAuthLogin"}, //only need scope for logging in
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://accounts.google.com/o/oauth2/auth",  //interactive user login
-			TokenURL: "https://accounts.google.com/o/oauth2/token", //API endpoint to get access token from refresh token or auth code
+		ClientID:     "936475272427.apps.googleusercontent.com", //iOS id
+		ClientSecret: "KWsJlkaMn1jGLxQpWxMnOox-",                //iOS secret
+		Scopes: []string{
+			"https://www.google.com/accounts/OAuthLogin",
+			"https://www.googleapis.com/auth/userinfo.email",
 		},
-		RedirectURL: "urn:ietf:wg:oauth:2.0:oob", //dont redirect - show a page with the auth_code ready to be copied
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://accounts.google.com/o/oauth2/programmatic_auth", //interactive user login
+			TokenURL: "https://accounts.google.com/o/oauth2/token",             //API endpoint to get access token from refresh token or auth code
+		},
+		// RedirectURL: "urn:ietf:wg:oauth:2.0:oob", //dont redirect - show a page with the auth_code ready to be copied
 	}
 
 	client, err := s.getOauthClient(oauthConf)
@@ -89,7 +92,7 @@ func (s *Session) getOauthClient(oauthConf *oauth2.Config) (*http.Client, error)
 	var err error
 
 	if s.RefreshToken == "" {
-		token, err = tokenFromAuthCode(oauthConf)
+		token, err = s.tokenFromAuthCode(oauthConf)
 	} else {
 		token, err = tokenFromRefreshToken(oauthConf, s.RefreshToken)
 	}
@@ -111,16 +114,18 @@ func tokenFromRefreshToken(oauthConf *oauth2.Config, refreshToken string) (*oaut
 	return tokenSource.Token()
 }
 
-func tokenFromAuthCode(oauthConf *oauth2.Config) (*oauth2.Token, error) {
+func (s *Session) tokenFromAuthCode(oauthConf *oauth2.Config) (*oauth2.Token, error) {
 	// construct url and encode queries properly
-	authUrl := oauthConf.AuthCodeURL("randomStateString", oauth2.AccessTypeOffline)
+	authURL := oauthConf.AuthCodeURL("randomStateString", oauth2.AccessTypeOffline)
+	u, _ := url.Parse(authURL)
+	q, _ := url.ParseQuery(u.RawQuery)
+	q.Del("access_type")
+	q.Del("response_type")
+	q.Del("state")
+	u.RawQuery = q.Encode()
 
-	// ask the user for the auth token
-	log.Println("Can't find Refresh Token. Please navigate to the below address and paste the code\n")
-	fmt.Println(authUrl, "\n")
-	fmt.Print("Auth Code: ")
-	authCode := ""
-	fmt.Scanln(&authCode)
+	// Callback to exchange token with a user interactive authorization URL
+	authCode := s.GetAuthToken(u.String())
 
 	// got the auth_code. Exchange it with an access token
 	token, err := oauthConf.Exchange(oauth2.NoContext, authCode)

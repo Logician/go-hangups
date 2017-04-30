@@ -38,6 +38,7 @@ func ApiRequest(endpointUrl, contentType, responseType, cookies, sapisid string,
 	urlObject, _ := url.Parse(endpointUrl)
 	urlParams := url.Values{}
 	urlParams.Set("alt", responseType)
+	urlParams.Set("key", "AIzaSyAfFJCeph-euFSwtmqFZi0kaKk-cZ5wufM")
 	urlObject.RawQuery = urlParams.Encode()
 
 	req, err := http.NewRequest("post", urlObject.String(), bytes.NewBufferString(string(payload)))
