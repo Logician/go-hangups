@@ -13,10 +13,11 @@ import (
 )
 
 type Session struct {
-	GetAuthToken func(string) string
-	RefreshToken string
-	Cookies      string
-	Sapisid      string
+	GetAuthToken     func(string, interface{}) string
+	GetAuthTokenData interface{}
+	RefreshToken     string
+	Cookies          string
+	Sapisid          string
 }
 
 func (s *Session) Init() error {
@@ -125,7 +126,7 @@ func (s *Session) tokenFromAuthCode(oauthConf *oauth2.Config) (*oauth2.Token, er
 	u.RawQuery = q.Encode()
 
 	// Callback to exchange token with a user interactive authorization URL
-	authCode := s.GetAuthToken(u.String())
+	authCode := s.GetAuthToken(u.String(), s.GetAuthTokenData)
 
 	// got the auth_code. Exchange it with an access token
 	token, err := oauthConf.Exchange(oauth2.NoContext, authCode)
